@@ -1,13 +1,19 @@
 import cv2
 import mediapipe as mp
 import pyautogui
+import time
 
 cap = cv2.VideoCapture(0)
 drawing_utils = mp.solutions.drawing_utils
 hand_detector = mp.solutions.hands.Hands()
+
+# Variables for click cooldown
+last_click_time = 0
+click_cooldown = 1  # Cooldown time in seconds
+
 while True:
   _, frame = cap.read()
-  frame = cv2.flip(frame,1)
+  frame = cv2.flip(frame, 1)
   f_height, f_width, _ = frame.shape
   rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
   detection = hand_detector.process(rgb_frame)
@@ -23,29 +29,33 @@ while True:
       for id, landmark in enumerate(landmarks):
         x = int(landmark.x * f_width)
         y = int(landmark.y * f_height)
-        
+          
         if id == 8:  # Index finger tip
           cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
           index_y = y
         if id == 4:  # Thumb tip
           cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
           thumb_y = y
-      
+        
       if index_y is not None and thumb_y is not None:
         print('index_y', index_y)
         print('thumb_y', thumb_y)
         distance = abs(index_y - thumb_y)
         print('abs', distance)
-        if distance < 20:
+        
+        current_time = time.time()
+        if distance < 20 and (current_time - last_click_time) > click_cooldown:
           print('click')
-          pyautogui.press('left')
+          last_click_time = current_time
+          # Perform click action here if needed
+          # pyautogui.click()
       else:
         print('Index finger or thumb not detected')
-
-
-
 
   cv2.imshow('Gesture presenter', frame)
   key = cv2.waitKey(10)
   if key == 27:  # ESC
     break
+
+cap.release()
+cv2.destroyAllWindows()
