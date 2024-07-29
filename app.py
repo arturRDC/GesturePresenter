@@ -29,29 +29,38 @@ while True:
       
       # Get reference distance (distance between wrist and middle finger tip)
       wrist = landmarks[0]
-      middle_finger_tip = landmarks[12]
-      reference_distance = calculate_distance(wrist, middle_finger_tip)
+      middle_finger_knucle = landmarks[12]
+      reference_distance = calculate_distance(wrist, middle_finger_knucle)
       
-      # Get index finger tip and thumb tip
+      # Get index finger tip, middle finger tip, and thumb tip
       index_finger_tip = landmarks[8]
+      middle_finger_tip = landmarks[12]
       thumb_tip = landmarks[4]
       
-      # Calculate distance between index finger and thumb
+      # Calculate distances
       index_thumb_distance = calculate_distance(index_finger_tip, thumb_tip)
+      middle_thumb_distance = calculate_distance(middle_finger_tip, thumb_tip)
       
-      # Calculate relative distance
-      relative_distance = index_thumb_distance / reference_distance
+      # Calculate relative distances
+      index_relative_distance = index_thumb_distance / reference_distance
+      middle_relative_distance = middle_thumb_distance / reference_distance
       
-      print('Relative distance:', relative_distance)
+      print('Index relative distance:', index_relative_distance)
+      print('Middle relative distance:', middle_relative_distance)
       
       current_time = time.time()
-      if relative_distance < 0.12 and (current_time - last_click_time) > click_cooldown:
-        print('click')
-        last_click_time = current_time
-        pyautogui.press('left')
+      if (current_time - last_click_time) > click_cooldown:
+        if index_relative_distance < 0.12:
+          print('Index finger click')
+          pyautogui.press('left')
+          last_click_time = current_time
+        elif middle_relative_distance < 0.2:
+          pyautogui.press('right')
+          print('Middle finger click')
+          last_click_time = current_time
       
-      # Draw circles on index finger tip and thumb tip
-      for point in [index_finger_tip, thumb_tip]:
+      # Draw circles on finger tips and thumb tip
+      for point in [index_finger_tip, middle_finger_tip, thumb_tip]:
         x = int(point.x * f_width)
         y = int(point.y * f_height)
         cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
