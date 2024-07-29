@@ -7,9 +7,11 @@ cap = cv2.VideoCapture(0)
 drawing_utils = mp.solutions.drawing_utils
 hand_detector = mp.solutions.hands.Hands()
 
-# Variables for click cooldown
 last_click_time = 0
 click_cooldown = 1  # Cooldown time in seconds
+
+def calculate_distance(p1, p2):
+  return ((p1.x - p2.x)**2 + (p1.y - p2.y)**2)**0.5
 
 while True:
   _, frame = cap.read()
@@ -24,33 +26,34 @@ while True:
     for hand in hands:
       drawing_utils.draw_landmarks(frame, hand)
       landmarks = hand.landmark
-      index_y = None
-      thumb_y = None
-      for id, landmark in enumerate(landmarks):
-        x = int(landmark.x * f_width)
-        y = int(landmark.y * f_height)
-          
-        if id == 8:  # Index finger tip
-          cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
-          index_y = y
-        if id == 4:  # Thumb tip
-          cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
-          thumb_y = y
-        
-      if index_y is not None and thumb_y is not None:
-        print('index_y', index_y)
-        print('thumb_y', thumb_y)
-        distance = abs(index_y - thumb_y)
-        print('abs', distance)
-        
-        current_time = time.time()
-        if distance < 20 and (current_time - last_click_time) > click_cooldown:
-          print('click')
-          last_click_time = current_time
-          # Perform click action here if needed
-          # pyautogui.click()
-      else:
-        print('Index finger or thumb not detected')
+      
+      # Get reference distance (distance between wrist and middle finger tip)
+      wrist = landmarks[0]
+      middle_finger_tip = landmarks[12]
+      reference_distance = calculate_distance(wrist, middle_finger_tip)
+      
+      # Get index finger tip and thumb tip
+      index_finger_tip = landmarks[8]
+      thumb_tip = landmarks[4]
+      
+      # Calculate distance between index finger and thumb
+      index_thumb_distance = calculate_distance(index_finger_tip, thumb_tip)
+      
+      # Calculate relative distance
+      relative_distance = index_thumb_distance / reference_distance
+      
+      print('Relative distance:', relative_distance)
+      
+      current_time = time.time()
+      if relative_distance < 0.1 and (current_time - last_click_time) > click_cooldown:
+        print('click')
+        last_click_time = current_time
+      
+      # Draw circles on index finger tip and thumb tip
+      for point in [index_finger_tip, thumb_tip]:
+        x = int(point.x * f_width)
+        y = int(point.y * f_height)
+        cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
 
   cv2.imshow('Gesture presenter', frame)
   key = cv2.waitKey(10)
