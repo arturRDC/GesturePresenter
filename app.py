@@ -8,7 +8,7 @@ drawing_utils = mp.solutions.drawing_utils
 hand_detector = mp.solutions.hands.Hands()
 
 last_click_time = 0
-click_cooldown = 1  # Cooldown time in seconds
+click_cooldown = 0.4  # Cooldown time in seconds
 
 def calculate_distance(p1, p2):
   return ((p1.x - p2.x)**2 + (p1.y - p2.y)**2)**0.5
@@ -45,9 +45,10 @@ while True:
       print('Relative distance:', relative_distance)
       
       current_time = time.time()
-      if relative_distance < 0.1 and (current_time - last_click_time) > click_cooldown:
+      if relative_distance < 0.12 and (current_time - last_click_time) > click_cooldown:
         print('click')
         last_click_time = current_time
+        pyautogui.press('left')
       
       # Draw circles on index finger tip and thumb tip
       for point in [index_finger_tip, thumb_tip]:
