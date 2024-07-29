@@ -45,18 +45,13 @@ while True:
       index_relative_distance = index_thumb_distance / reference_distance
       middle_relative_distance = middle_thumb_distance / reference_distance
       
-      print('Index relative distance:', index_relative_distance)
-      print('Middle relative distance:', middle_relative_distance)
-      
       current_time = time.time()
       if (current_time - last_click_time) > click_cooldown:
         if index_relative_distance < 0.12:
-          print('Index finger click')
           pyautogui.press('left')
           last_click_time = current_time
         elif middle_relative_distance < 0.2:
           pyautogui.press('right')
-          print('Middle finger click')
           last_click_time = current_time
       
       # Draw circles on finger tips and thumb tip
