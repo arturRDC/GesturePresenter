@@ -37,7 +37,9 @@ GesturePresenter is a Python project that controls presentation slides using fin
    python app.py
    ```
 
-2. Position your hand in front of the camera and use the following gestures:
+2. Switch windows to the slides presentation
+
+3. Position your hand in front of the camera and use the following gestures:
    - Connect your thumb with your middle finger to move to the next slide.
    - Connect your thumb with your index finger to move to the previous slide.
 
@@ -82,6 +84,8 @@ GesturePresenter é um projeto em Python que controla slides de apresentação u
    python app.py
    ```
 
-2. Posicione sua mão em frente à câmera e use os seguintes gestos:
+2. Troque a janela para a apresentação de slides
+
+3. Posicione sua mão em frente à câmera e use os seguintes gestos:
    - Conecte o polegar com o dedo médio para mover para o próximo slide.
    - Conecte o polegar com o dedo indicador para mover para o slide anterior.
