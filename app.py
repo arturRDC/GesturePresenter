@@ -1,6 +1,6 @@
 import cv2
 import mediapipe as mp
-
+import pyautogui
 
 cap = cv2.VideoCapture(0)
 drawing_utils = mp.solutions.drawing_utils
@@ -12,18 +12,37 @@ while True:
   rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
   detection = hand_detector.process(rgb_frame)
   hands = detection.multi_hand_landmarks
+  screen_width, screen_height = pyautogui.size()
   
-  print(hands)
   if hands:
     for hand in hands:
       drawing_utils.draw_landmarks(frame, hand)
       landmarks = hand.landmark
+      index_y = None
+      thumb_y = None
       for id, landmark in enumerate(landmarks):
         x = int(landmark.x * f_width)
         y = int(landmark.y * f_height)
-        print(x,y)
-        if id == 8:
+        
+        if id == 8:  # Index finger tip
           cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
+          index_y = y
+        if id == 4:  # Thumb tip
+          cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
+          thumb_y = y
+      
+      if index_y is not None and thumb_y is not None:
+        print('index_y', index_y)
+        print('thumb_y', thumb_y)
+        distance = abs(index_y - thumb_y)
+        print('abs', distance)
+        if distance < 20:
+          print('click')
+          pyautogui.press('left')
+      else:
+        print('Index finger or thumb not detected')
+
+
 
 
   cv2.imshow('Gesture presenter', frame)
