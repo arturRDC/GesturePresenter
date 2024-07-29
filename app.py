@@ -59,11 +59,3 @@ while True:
         x = int(point.x * f_width)
         y = int(point.y * f_height)
         cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
-
-  cv2.imshow('Gesture presenter', frame)
-  key = cv2.waitKey(10)
-  if key == 27:  # ESC
-    break
-
-cap.release()
-cv2.destroyAllWindows()
