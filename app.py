@@ -7,7 +7,7 @@ import argparse
 def calculate_distance(p1, p2):
   return ((p1.x - p2.x)**2 + (p1.y - p2.y)**2)**0.5
 
-def main(show_output):
+def main(show_output, invert_controls):
   cap = cv2.VideoCapture(0)
   drawing_utils = mp.solutions.drawing_utils
   hand_detector = mp.solutions.hands.Hands()
@@ -47,10 +47,12 @@ def main(show_output):
         current_time = time.time()
         if (current_time - last_click_time) > click_cooldown:
           if index_relative_distance < 0.12:
-            pyautogui.press('left')
+            key = 'right' if invert_controls else 'left'
+            pyautogui.press(key)
             last_click_time = current_time
           elif middle_relative_distance < 0.2:
-            pyautogui.press('right')
+            key = 'left' if invert_controls else 'right'
+            pyautogui.press(key)
             last_click_time = current_time
         
         if show_output:
@@ -74,6 +76,7 @@ def main(show_output):
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description="Gesture-based presenter control")
   parser.add_argument("--show-output", action="store_true", help="Show camera output")
+  parser.add_argument("--invert-controls", action="store_true", help="Invert finger controls")
   args = parser.parse_args()
 
-  main(args.show_output)
+  main(args.show_output, args.invert_controls)
