@@ -22,7 +22,6 @@ def main(show_output, invert_controls):
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     detection = hand_detector.process(rgb_frame)
     hands = detection.multi_hand_landmarks
-    screen_width, screen_height = pyautogui.size()
     
     if hands:
       for hand in hands:
@@ -65,9 +64,6 @@ def main(show_output, invert_controls):
       cv2.imshow('Gesture presenter', frame)
       key = cv2.waitKey(10)
       if key == 27:  # ESC
-        break
-    else:
-      if cv2.waitKey(10) & 0xFF == ord('q'):
         break
 
   cap.release()
